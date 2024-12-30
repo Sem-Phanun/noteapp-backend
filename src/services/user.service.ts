@@ -1,8 +1,8 @@
-import { CONFLICT, UNAUTHORIZED } from "../constants/http"
+import { CONFLICT, NOT_FOUND, UNAUTHORIZED } from "../constants/http"
 import { User } from "../entity/user.entity"
 import appAssert from "../util/app.assert"
 import { hashPassword,comparePassword } from "../util/hash.util"
-import { generateToken } from "../util/jwt.util"
+import { generateToken, verifyRefreshToken  } from "../util/jwt.util"
 
 type createAccountParams = {
     name: string,
@@ -42,14 +42,14 @@ export const loginRequest = async (params: loginParams) => {
         const user = await User.findOne({where:  {email: params.email }})
         appAssert(user, UNAUTHORIZED, "User not found.")
 
-        //generate jwt token
-        const token = await generateToken({ userId: user.id })
-
 
         //compare password
         const isMatch = await comparePassword(params.password, user.password)
 
         appAssert(isMatch, UNAUTHORIZED, "Invalid credentials.")
+
+        //generate jwt token
+        const token = await generateToken({ userId: user.id })
 
 
         return {
@@ -59,4 +59,36 @@ export const loginRequest = async (params: loginParams) => {
     } catch (error:any) {
         throw new Error(error.message)
     }
+}
+
+export const updateProfile = async (userId: number, params: createAccountParams) => {
+    //implement update profile logic here
+    const user = await User.findOne({where:  {id: userId }})
+    if(!user) {
+        throw new Error("User not found.")
+    }
+    
+    //update user profile
+    user.name = params.name
+    user.email = params.email
+    
+    await user.save()
+
+    return user
+
+}
+
+type changeName = {
+    name: string
+}
+export const updateName = async(userId: number, params: changeName)=> {
+    const user = await User.findOne({where: {id: userId}})
+    if(!user){
+        throw new Error("User not found: " + NOT_FOUND)
+    }
+    
+    user.name = params.name
+    await user.save()
+
+    return user
 }

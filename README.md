@@ -1,4 +1,5 @@
 #initialzation nodejs
-npm init -y
+
+#npm init -y
 
 

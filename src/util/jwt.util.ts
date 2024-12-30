@@ -1,10 +1,11 @@
 
 import jwt from 'jsonwebtoken';
-import { JWT_KEY } from '../constants/env'
-import Invalid from '../constants/invalidtoken';
+import { JWT_KEY, REFRESH_TOKEN } from '../constants/env'
 
-export const generateToken = (payload: object, expiresIn: string = "7d"): string => {
-	return jwt.sign(payload, JWT_KEY, { expiresIn });
+export const generateToken = (payload: object, expiresIn: string = "10m") => {
+	const accessToken = jwt.sign(payload, JWT_KEY, { expiresIn });
+
+    return accessToken;
 }
 
 export const verifyToken = (token: string): any => {
@@ -13,4 +14,7 @@ export const verifyToken = (token: string): any => {
     } catch (error) {
         throw new Error("Invalid token: " + token)
     }
+}
+export const verifyRefreshToken = (token: string): any => {
+    return jwt.verify(token, REFRESH_TOKEN)
 }

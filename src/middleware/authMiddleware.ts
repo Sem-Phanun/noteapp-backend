@@ -6,7 +6,7 @@ interface AuthenticatedRequest extends Request {
     user?: any;
 }
 
-export const authMiddlware = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const authMiddlware = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<any> => {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
         return res.status(UNAUTHORIZED).json({ message: 'Unauthorized' });

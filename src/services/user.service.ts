@@ -2,13 +2,8 @@ import { CONFLICT, NOT_FOUND, UNAUTHORIZED } from "../constants/http"
 import { User } from "../entity/user.entity"
 import appAssert from "../util/app.assert"
 import { hashPassword,comparePassword } from "../util/hash.util"
-import { generateToken, verifyRefreshToken  } from "../util/jwt.util"
-
-type createAccountParams = {
-    name: string,
-    email: string,
-    password: string
-}
+import { generateToken } from "../util/jwt.util"
+import { createAccountParams, loginParams } from "../interface/user.interface"
 
 export const createAccount = async (params: createAccountParams) => {
     try {
@@ -32,14 +27,11 @@ export const createAccount = async (params: createAccountParams) => {
     }
 }
 
-type loginParams = {
-    email: string,
-    password: string,
-}
+
 export const loginRequest = async (params: loginParams) => {
     try {
         //verify user exists
-        const user = await User.findOne({where:  {email: params.email }})
+        const user:any = await User.findOne({where:  {email: params.email }})
         appAssert(user, UNAUTHORIZED, "User not found.")
 
 
@@ -61,6 +53,16 @@ export const loginRequest = async (params: loginParams) => {
     }
 }
 
+export const getUserData = async (authenticatedId: number) => {
+    try {
+        const user = await User.findOne({where: {id: authenticatedId}})
+        appAssert(user, NOT_FOUND, "User not found.")
+        return user
+    } catch (error) {
+        
+    }
+}
+
 export const updateProfile = async (userId: number, params: createAccountParams) => {
     //implement update profile logic here
     const user = await User.findOne({where:  {id: userId }})
@@ -78,7 +80,7 @@ export const updateProfile = async (userId: number, params: createAccountParams)
 
 }
 
-type changeName = {
+interface changeName {
     name: string
 }
 export const updateName = async(userId: number, params: changeName)=> {

@@ -13,8 +13,8 @@ export const authMiddlware = async (req: AuthenticatedRequest, res: Response, ne
     }
 
     try {
-        const user = await verifyToken(token);
-        req.user = user;
+        const decoded = await verifyToken(token);
+        req.user = decoded;
         next();
     } catch (error) {
         res.status(UNAUTHORIZED).json({ message: 'Invalid token' });

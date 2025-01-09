@@ -4,21 +4,21 @@ import { User } from "./user.entity";
 @Entity("notes")
 export class Note extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id!: number;
+    id?: number;
 
     @Column("varchar")
-    title!: string;
+    title?: string;
 
     @Column("text")
-    content!: string;
+    description?: string;
     
     @Column("timestamp")
-    createdAt!: Date;
+    createdAt?: Date;
 
     @Column()
     userId?: number;
 
     @ManyToOne(() => User, user => user.notes)
-    user!: User;
+    user?: User;
 
 }

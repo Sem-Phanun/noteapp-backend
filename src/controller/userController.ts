@@ -1,10 +1,14 @@
+// Purpose: Controller for handling user requests. 
+// This controller is responsible for handling user registration, login, and updating user information. 
+// It interacts with the user service to perform these operations. 
+// The controller also handles error responses and sends appropriate responses to the client.
 import {Request, Response } from "express";
 import catchErrors from '../util/catch.error.util';
 import { nameSchema, userSchema } from '../schema/user.schema'
-import { createAccount, loginRequest, updateName, updateProfile } from '../services/user.service';
+import { createAccount, loginRequest, updateName, updateProfile, getUserData } from '../services/user.service';
 import { CONFLICT, CREATED, INTERNAL_SERVER_ERROR, OK, UNAUTHORIZED } from '../constants/http';
 import { loginSchema } from '../schema/login.schema';
-import { User } from "../entity/user.entity";
+
 
 export const registerHandler = catchErrors(async (req: Request, res: Response) => {
     const requestUser = userSchema.parse({...req.body})
@@ -30,14 +34,12 @@ export const loginHandler = catchErrors(async (req: Request, res: Response) => {
     })
 
     try {
-        const user = await loginRequest(request)
+        const data = await loginRequest(request)
 
-        if(user) {
             res.status(OK).json({
-                message: "Login successful",
-                user: user,
+                message: "Login successful", 
+                data: data
             })
-        }
     } catch (error) {
         res.status(INTERNAL_SERVER_ERROR).json({
             message: 'An error occurred while logging in',
@@ -46,17 +48,18 @@ export const loginHandler = catchErrors(async (req: Request, res: Response) => {
 })
 
 export const getUser = catchErrors( async (req:Request, res: Response): Promise<any> => {
-    const userId = req.body.user
-    const user = await User.findOne({where: {id: userId}})
-    
-    if(!user) {
-        return res.status(INTERNAL_SERVER_ERROR).json({
-            message: 'User not found',
-        })
-    }else {
+    const userId = req.body.userId
+    try {
+        const user = await getUserData(userId)
         res.status(OK).json({
-            message: "User retrieved successfully",
-            user: user,
+                message: "User found",
+                user: user,
+        })
+            
+
+    } catch (error) {
+        res.status(INTERNAL_SERVER_ERROR).json({
+            message: 'An error occurred while getting the user',
         })
     }
 });

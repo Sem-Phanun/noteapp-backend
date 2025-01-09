@@ -19,9 +19,7 @@ app.use(cors({
 
 // Routes
 app.get('/', (req: Request, res: Response) => {
-    res.status(200).json({
-        status: 'OK',
-    });
+    res.status(200).send('Welcome to the Notes API');
 });
 app.use('/api', noteRoute);
 app.use('/api', userRoute)

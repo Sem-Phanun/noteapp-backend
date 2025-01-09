@@ -9,7 +9,7 @@ const getEnv = (key: string, defaultValue?: string): string => {
     return value;
 }
 export const NODE_ENV = getEnv('NODE_ENV');
-export const PORT_URL = getEnv('PORT', '3000');
+export const PORT_URL = getEnv('PORT');
 export const JWT_KEY = getEnv('SECRET_KEY');
 export const REFRESH_TOKEN = getEnv('REFRESH_TOKEN');
 export const DB_PORT = getEnv('DB_PORT'); 
